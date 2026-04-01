@@ -783,6 +783,18 @@ html:not(.dark) .blur-ball-teal {
   opacity: 0.2;
 }
 
+/* ==================== Auth 页面隐藏导航栏 ==================== */
+/* 认证页面使用全屏双栏布局，不需要顶部导航栏 */
+body.auth-page-header-opaque header {
+  display: none !important;
+}
+/* 同时去掉 header 占位导致的 margin/padding */
+body.auth-page-header-opaque .semi-layout-content,
+body.auth-page-header-opaque main {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
 /* ==================== 卡片马卡龙模糊球（类封装） ==================== */
 /* 使用方式：给容器加上 with-pastel-balls 类即可，无需在 JSX 中插入额外节点 */
 .with-pastel-balls {

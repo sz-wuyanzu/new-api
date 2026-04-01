@@ -64,6 +64,7 @@ import OIDCIcon from '../common/logo/OIDCIcon';
 import WeChatIcon from '../common/logo/WeChatIcon';
 import LinuxDoIcon from '../common/logo/LinuxDoIcon';
 import TwoFAVerification from './TwoFAVerification';
+import AuthLayout from './AuthLayout';
 import { useTranslation } from 'react-i18next';
 import { SiDiscord } from 'react-icons/si';
 
@@ -716,7 +717,13 @@ const LoginForm = () => {
     );
   };
 
-  const renderEmailLoginForm = () => {
+  const renderEmailLoginForm = ({ setIsTyping, setShowPwd, setHasPassword } = {}) => {
+    const [localShowPwd, setLocalShowPwd] = useState(false);
+    const toggleShowPwd = () => {
+      const next = !localShowPwd;
+      setLocalShowPwd(next);
+      setShowPwd && setShowPwd(next);
+    };
     return (
       <div className='flex flex-col items-center'>
         <div className='w-full max-w-md'>
@@ -751,6 +758,8 @@ const LoginForm = () => {
                   placeholder={t('请输入您的用户名或邮箱地址')}
                   name='username'
                   onChange={(value) => handleChange('username', value)}
+                  onFocus={() => setIsTyping && setIsTyping(true)}
+                  onBlur={() => setIsTyping && setIsTyping(false)}
                   prefix={<IconMail />}
                 />
 
@@ -759,9 +768,22 @@ const LoginForm = () => {
                   label={t('密码')}
                   placeholder={t('请输入您的密码')}
                   name='password'
-                  mode='password'
-                  onChange={(value) => handleChange('password', value)}
+                  type={localShowPwd ? 'text' : 'password'}
+                  onChange={(value) => {
+                    handleChange('password', value);
+                    setHasPassword && setHasPassword(value.length > 0);
+                  }}
+                  onFocus={() => setIsTyping && setIsTyping(true)}
+                  onBlur={() => setIsTyping && setIsTyping(false)}
                   prefix={<IconLock />}
+                  suffix={
+                    <span
+                      onClick={toggleShowPwd}
+                      style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                    >
+                      {localShowPwd ? <Icon svg={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>} /> : <Icon svg={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>} />}
+                    </span>
+                  }
                 />
 
                 {(hasUserAgreement || hasPrivacyPolicy) && (
@@ -947,36 +969,28 @@ const LoginForm = () => {
   };
 
   return (
-    <div className='relative overflow-hidden bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8'>
-      {/* 背景模糊晕染球 */}
-      <div
-        className='blur-ball blur-ball-indigo'
-        style={{ top: '-80px', right: '-80px', transform: 'none' }}
-      />
-      <div
-        className='blur-ball blur-ball-teal'
-        style={{ top: '50%', left: '-120px' }}
-      />
-      <div className='w-full max-w-sm mt-[60px]'>
-        {showEmailLogin ||
-        !hasOAuthLoginOptions
-          ? renderEmailLoginForm()
-          : renderOAuthOptions()}
-        {renderWeChatLoginModal()}
-        {render2FAModal()}
+    <AuthLayout>
+      {({ setIsTyping, setShowPassword: setShowPwd, setHasPassword }) => (
+        <div>
+          {showEmailLogin || !hasOAuthLoginOptions
+            ? renderEmailLoginForm({ setIsTyping, setShowPwd, setHasPassword })
+            : renderOAuthOptions()}
+          {renderWeChatLoginModal()}
+          {render2FAModal()}
 
-        {turnstileEnabled && (
-          <div className='flex justify-center mt-6'>
-            <Turnstile
-              sitekey={turnstileSiteKey}
-              onVerify={(token) => {
-                setTurnstileToken(token);
-              }}
-            />
-          </div>
-        )}
-      </div>
-    </div>
+          {turnstileEnabled && (
+            <div className='flex justify-center mt-6'>
+              <Turnstile
+                sitekey={turnstileSiteKey}
+                onVerify={(token) => {
+                  setTurnstileToken(token);
+                }}
+              />
+            </div>
+          )}
+        </div>
+      )}
+    </AuthLayout>
   );
 };
 

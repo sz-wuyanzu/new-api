@@ -62,6 +62,7 @@ import WeChatIcon from '../common/logo/WeChatIcon';
 import TelegramLoginButton from 'react-telegram-login/src';
 import { UserContext } from '../../context/User';
 import { StatusContext } from '../../context/Status';
+import AuthLayout from './AuthLayout';
 import { useTranslation } from 'react-i18next';
 import { SiDiscord } from 'react-icons/si';
 
@@ -554,7 +555,7 @@ const RegisterForm = () => {
     );
   };
 
-  const renderEmailRegisterForm = () => {
+  const renderEmailRegisterForm = ({ setIsTyping, setHasPassword } = {}) => {
     return (
       <div className='flex flex-col items-center'>
         <div className='w-full max-w-md'>
@@ -579,6 +580,8 @@ const RegisterForm = () => {
                   placeholder={t('请输入用户名')}
                   name='username'
                   onChange={(value) => handleChange('username', value)}
+                  onFocus={() => setIsTyping && setIsTyping(true)}
+                  onBlur={() => setIsTyping && setIsTyping(false)}
                   prefix={<IconUser />}
                 />
 
@@ -588,7 +591,12 @@ const RegisterForm = () => {
                   placeholder={t('输入密码，最短 8 位，最长 20 位')}
                   name='password'
                   mode='password'
-                  onChange={(value) => handleChange('password', value)}
+                  onChange={(value) => {
+                    handleChange('password', value);
+                    setHasPassword && setHasPassword(value.length > 0);
+                  }}
+                  onFocus={() => setIsTyping && setIsTyping(true)}
+                  onBlur={() => setIsTyping && setIsTyping(false)}
                   prefix={<IconLock />}
                 />
 
@@ -599,6 +607,8 @@ const RegisterForm = () => {
                   name='password2'
                   mode='password'
                   onChange={(value) => handleChange('password2', value)}
+                  onFocus={() => setIsTyping && setIsTyping(true)}
+                  onBlur={() => setIsTyping && setIsTyping(false)}
                   prefix={<IconLock />}
                 />
 
@@ -770,35 +780,27 @@ const RegisterForm = () => {
   };
 
   return (
-    <div className='relative overflow-hidden bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8'>
-      {/* 背景模糊晕染球 */}
-      <div
-        className='blur-ball blur-ball-indigo'
-        style={{ top: '-80px', right: '-80px', transform: 'none' }}
-      />
-      <div
-        className='blur-ball blur-ball-teal'
-        style={{ top: '50%', left: '-120px' }}
-      />
-      <div className='w-full max-w-sm mt-[60px]'>
-        {showEmailRegister ||
-        !hasOAuthRegisterOptions
-          ? renderEmailRegisterForm()
-          : renderOAuthOptions()}
-        {renderWeChatLoginModal()}
+    <AuthLayout>
+      {({ setIsTyping, setHasPassword }) => (
+        <div>
+          {showEmailRegister || !hasOAuthRegisterOptions
+            ? renderEmailRegisterForm({ setIsTyping, setHasPassword })
+            : renderOAuthOptions()}
+          {renderWeChatLoginModal()}
 
-        {turnstileEnabled && (
-          <div className='flex justify-center mt-6'>
-            <Turnstile
-              sitekey={turnstileSiteKey}
-              onVerify={(token) => {
-                setTurnstileToken(token);
-              }}
-            />
-          </div>
-        )}
-      </div>
-    </div>
+          {turnstileEnabled && (
+            <div className='flex justify-center mt-6'>
+              <Turnstile
+                sitekey={turnstileSiteKey}
+                onVerify={(token) => {
+                  setTurnstileToken(token);
+                }}
+              />
+            </div>
+          )}
+        </div>
+      )}
+    </AuthLayout>
   );
 };
 
