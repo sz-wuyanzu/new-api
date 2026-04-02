@@ -70,6 +70,51 @@ code {
 }
 
 /* ==================== 导航和侧边栏样式 ==================== */
+
+/* -- 导航栏气泡按钮 -- */
+.nav-pill {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  backdrop-filter: blur(0px) saturate(1);
+  -webkit-backdrop-filter: blur(0px) saturate(1);
+  transition:
+    background 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    backdrop-filter 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    -webkit-backdrop-filter 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.2s ease;
+}
+
+.nav-pill:hover:not(.nav-pill-active) {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-pill-active {
+  background: rgba(255, 255, 255, 0.13);
+  border-color: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(16px) saturate(1.6);
+  -webkit-backdrop-filter: blur(16px) saturate(1.6);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+}
+
+html.dark .nav-pill:hover:not(.nav-pill-active) {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+html.dark .nav-pill-active {
+  background: rgba(255, 255, 255, 0.10);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.15);
+}
+
 .semi-navigation-item {
   margin-bottom: 4px !important;
   padding: 4px 12px !important;
@@ -901,13 +946,13 @@ html.dark .with-pastel-balls::before {
   min-width: clamp(280px, 24vw, 520px) !important;
   max-width: clamp(280px, 24vw, 520px) !important;
   height: calc(100vh - 60px);
-  background-color: var(--semi-color-bg-0);
+  background-color: transparent;
   overflow: auto;
 }
 
 .pricing-content {
   height: calc(100vh - 60px);
-  background-color: var(--semi-color-bg-0);
+  background-color: transparent;
   display: flex;
   flex-direction: column;
 }
@@ -925,7 +970,7 @@ html.dark .with-pastel-balls::before {
 
 .pricing-search-header {
   padding: 0.5rem;
-  background-color: var(--semi-color-bg-0);
+  background-color: transparent;
   flex-shrink: 0;
   position: sticky;
   top: 0;
@@ -1019,28 +1064,52 @@ html.dark .with-pastel-balls::before {
 
 .ec-dbcd0a3c01b55203 { forced-color-adjust: auto; }
 
-/* ==================== 全局 Glassmorphism 毛玻璃风格 ==================== */
+/* ==================== iOS 26 Liquid Glass 全局风格 ==================== */
 /*
- * CSS Glassmorphism 全局覆盖
- * 通过 backdrop-filter + 半透明背景 + 微妙边框 实现毛玻璃质感
+ * 灵感源自 iOS 26 Liquid Glass 设计语言
+ * backdrop-filter: blur(44px) saturate(2.4) brightness(1.18)
+ * 顶部高光边缘 + 彩虹折射底边 + 鲜艳渐变壁纸
  * 兼容所有现代浏览器，零 JS 开销
  */
 
-/* -- 导航栏毛玻璃增强（补充 Tailwind 不便写的属性） -- */
+/* -- Liquid Glass CSS 变量 -- */
+:root {
+  --lg-blur: 28px;
+  --lg-saturate: 2.0;
+  --lg-brightness: 1.12;
+  --lg-bg: rgba(255, 255, 255, 0.08);
+  --lg-border: rgba(255, 255, 255, 0.18);
+  --lg-highlight: rgba(255, 255, 255, 0.22);
+  --lg-shadow: rgba(0, 0, 0, 0.08);
+  --lg-radius: 20px;
+  --lg-accent: #007AFF;
+}
+
+html.dark {
+  --lg-bg: rgba(255, 255, 255, 0.06);
+  --lg-border: rgba(255, 255, 255, 0.12);
+  --lg-highlight: rgba(255, 255, 255, 0.15);
+  --lg-shadow: rgba(0, 0, 0, 0.25);
+}
+
+/* -- 导航栏 Liquid Glass -- */
 header.sticky {
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  box-shadow: none !important;
 }
 
 html.dark header.sticky {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  box-shadow:
+    0 2px 12px rgba(0, 0, 0, 0.3),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06) !important;
 }
 
-/* -- 侧边栏毛玻璃 -- */
+/* -- 侧边栏 Liquid Glass -- */
 .sidebar-container {
-  background: rgba(255, 255, 255, 0.4) !important;
-  backdrop-filter: blur(16px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
-  border-right: 1px solid rgba(0, 0, 0, 0.06) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate)) brightness(var(--lg-brightness)) !important;
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate)) brightness(var(--lg-brightness)) !important;
+  border-right: 1px solid var(--lg-border) !important;
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.06) !important;
 }
 
 .sidebar-nav {
@@ -1048,16 +1117,19 @@ html.dark header.sticky {
 }
 
 .sidebar-collapse-button {
-  background: rgba(255, 255, 255, 0.35) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  box-shadow: 0 -8px 16px -4px rgba(255, 255, 255, 0.5) !important;
-  border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
+  background: rgba(255, 255, 255, 0.10) !important;
+  backdrop-filter: blur(32px) saturate(2) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(2) !important;
+  box-shadow:
+    0 -8px 20px -4px rgba(255, 255, 255, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.30) !important;
 }
 
 html.dark .sidebar-container {
-  background: rgba(15, 15, 35, 0.35) !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+  background: rgba(15, 15, 35, 0.20) !important;
+  border-right: 1px solid var(--lg-border) !important;
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.04) !important;
 }
 
 html.dark .sidebar-nav {
@@ -1065,121 +1137,224 @@ html.dark .sidebar-nav {
 }
 
 html.dark .sidebar-collapse-button {
-  background: rgba(15, 15, 35, 0.4) !important;
-  box-shadow: 0 -8px 16px -4px rgba(0, 0, 0, 0.2) !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+  background: rgba(15, 15, 35, 0.25) !important;
+  box-shadow:
+    0 -8px 20px -4px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  border-top: 1px solid var(--lg-border) !important;
 }
 
-/* -- Semi Card 毛玻璃 -- */
+/* 侧边栏选中项玻璃效果 */
+.sidebar-nav-item-selected {
+  background: rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+html.dark .sidebar-nav-item-selected {
+  background: rgba(255, 255, 255, 0.10) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+/* -- Semi Card Liquid Glass -- */
 .semi-card {
-  background: rgba(255, 255, 255, 0.45) !important;
-  backdrop-filter: blur(16px) saturate(140%) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(140%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.5) !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03) !important;
+  position: relative;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  border-radius: var(--lg-radius) !important;
+  overflow: hidden;
+  box-shadow: none !important;
+  transition: transform 0.4s cubic-bezier(.22,.68,0,1.1),
+              box-shadow 0.4s,
+              border-color 0.3s !important;
+  will-change: transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* 卡片顶部高光层 — 已禁用 */
+.semi-card::before {
+  display: none;
+}
+
+/* 卡片底部彩虹折射边 — 已禁用 */
+.semi-card::after {
+  display: none;
 }
 
 html.dark .semi-card {
-  background: rgba(255, 255, 255, 0.03) !important;
-  backdrop-filter: blur(16px) saturate(150%) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(150%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.07) !important;
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  box-shadow: none !important;
 }
 
-/* -- Semi Modal 毛玻璃 -- */
+/* 确保卡片内容在伪元素之上 */
+.semi-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* -- Semi Modal Liquid Glass -- */
 .semi-modal-content {
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.1) !important;
+  background: rgba(255, 255, 255, 0.18) !important;
+  backdrop-filter: blur(48px) saturate(2.4) brightness(1.18) !important;
+  -webkit-backdrop-filter: blur(48px) saturate(2.4) brightness(1.18) !important;
+  border: 1px solid var(--lg-border) !important;
+  border-radius: var(--lg-radius) !important;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.12),
+    0 4px 16px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.20),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06) !important;
 }
 
 html.dark .semi-modal-content {
-  background: rgba(15, 15, 35, 0.7) !important;
-  backdrop-filter: blur(24px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(15, 15, 35, 0.25) !important;
+  backdrop-filter: blur(48px) saturate(2.2) brightness(1.1) !important;
+  -webkit-backdrop-filter: blur(48px) saturate(2.2) brightness(1.1) !important;
+  border: 1px solid var(--lg-border) !important;
   box-shadow:
-    0 16px 48px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    0 20px 60px rgba(0, 0, 0, 0.35),
+    0 4px 16px rgba(0, 0, 0, 0.15),
+    inset 0 2px 0 rgba(255, 255, 255, 0.10),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04) !important;
 }
 
-/* -- Semi SideSheet 毛玻璃 -- */
+/* -- Semi SideSheet Liquid Glass -- */
 .semi-sidesheet-inner {
-  background: rgba(255, 255, 255, 0.92) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(44px) saturate(2.2) brightness(1.15) !important;
+  -webkit-backdrop-filter: blur(44px) saturate(2.2) brightness(1.15) !important;
+  border-left: 1px solid var(--lg-border) !important;
+  box-shadow:
+    inset 1px 0 0 rgba(255, 255, 255, 0.25),
+    -8px 0 32px rgba(0, 0, 0, 0.06) !important;
 }
 
 html.dark .semi-sidesheet-inner {
-  background: rgba(15, 15, 35, 0.65) !important;
-  backdrop-filter: blur(20px) saturate(170%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(170%) !important;
+  background: rgba(15, 15, 35, 0.22) !important;
+  backdrop-filter: blur(44px) saturate(2) brightness(1.08) !important;
+  -webkit-backdrop-filter: blur(44px) saturate(2) brightness(1.08) !important;
+  border-left: 1px solid var(--lg-border) !important;
+  box-shadow:
+    inset 1px 0 0 rgba(255, 255, 255, 0.06),
+    -8px 0 32px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* -- Semi Tooltip / Popover 毛玻璃 -- */
+/* -- Semi Tooltip / Popover Liquid Glass -- */
 .semi-tooltip-wrapper-show .semi-tooltip-content,
 .semi-popover-wrapper-show .semi-popover-content {
-  backdrop-filter: blur(12px) saturate(150%) !important;
-  -webkit-backdrop-filter: blur(12px) saturate(150%) !important;
+  backdrop-filter: blur(28px) saturate(2) brightness(1.1) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(2) brightness(1.1) !important;
 }
 
-/* -- Semi Dropdown 毛玻璃 -- */
+/* -- Semi Dropdown Liquid Glass -- */
 .semi-dropdown-menu {
-  background: rgba(255, 255, 255, 0.92) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  border: 1px solid rgba(0, 0, 0, 0.06) !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(36px) saturate(2.2) brightness(1.15) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(2.2) brightness(1.15) !important;
+  border: 1px solid var(--lg-border) !important;
+  border-radius: 16px !important;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.50) !important;
 }
 
 html.dark .semi-dropdown-menu {
-  background: rgba(15, 15, 35, 0.7) !important;
-  backdrop-filter: blur(16px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25) !important;
+  background: rgba(15, 15, 35, 0.25) !important;
+  backdrop-filter: blur(36px) saturate(2) brightness(1.08) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(2) brightness(1.08) !important;
+  border: 1px solid var(--lg-border) !important;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
 }
 
-/* -- Semi Select 下拉面板毛玻璃 -- */
+/* -- Semi Select 下拉面板 Liquid Glass -- */
 .semi-select-option-list {
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(36px) saturate(2.2) brightness(1.15) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(2.2) brightness(1.15) !important;
+  border: 1px solid var(--lg-border) !important;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45) !important;
 }
 
 html.dark .semi-select-option-list {
-  background: rgba(15, 15, 35, 0.75) !important;
-  backdrop-filter: blur(16px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+  background: rgba(15, 15, 35, 0.25) !important;
+  backdrop-filter: blur(36px) saturate(2) brightness(1.08) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(2) brightness(1.08) !important;
+  border: 1px solid var(--lg-border) !important;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
 }
 
-/* -- 全局背景：动态彩色光斑 + 毛玻璃底色 -- */
-@keyframes blob-drift {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); }
-  25% { transform: translate(-45%, -55%) scale(1.15); }
-  50% { transform: translate(-55%, -45%) scale(0.95); }
-  75% { transform: translate(-48%, -52%) scale(1.1); }
+/* -- Semi Input 输入框 Liquid Glass 微妙效果 -- */
+.semi-input-wrapper {
+  background: rgba(255, 255, 255, 0.25) !important;
+  backdrop-filter: blur(12px) saturate(1.5) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(1.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.40) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.30) !important;
+  transition: all 0.25s ease !important;
 }
 
-@keyframes blob-drift-reverse {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); }
-  25% { transform: translate(-55%, -45%) scale(1.1); }
-  50% { transform: translate(-45%, -55%) scale(0.9); }
-  75% { transform: translate(-52%, -48%) scale(1.15); }
+.semi-input-wrapper:focus-within {
+  border-color: var(--lg-accent) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 0 0 3px rgba(0, 122, 255, 0.15) !important;
 }
 
-@keyframes blob-drift-slow {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); }
-  33% { transform: translate(-45%, -48%) scale(1.2); }
-  66% { transform: translate(-55%, -52%) scale(0.85); }
+html.dark .semi-input-wrapper {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
 }
 
-/* 光斑容器：覆盖整个视口 */
+html.dark .semi-input-wrapper:focus-within {
+  border-color: var(--lg-accent) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 0 3px rgba(0, 122, 255, 0.20) !important;
+}
+
+/* -- Semi Button 玻璃微效果 -- */
+.semi-button-light {
+  backdrop-filter: blur(8px) saturate(1.5) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(1.5) !important;
+}
+
+/* -- Semi Toast / Notification Liquid Glass -- */
+.semi-toast-wrapper .semi-toast,
+.semi-toast-wrapper .semi-toast-content,
+.semi-toast-wrapper .semi-toast .semi-toast-content,
+.semi-toast-wrapper .semi-toast .semi-toast-content-wrapper {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  --semi-shadow-elevated: none;
+}
+
+/* 只在最外层 .semi-toast-content 上加毛玻璃 */
+.semi-toast-wrapper .semi-toast .semi-toast-content {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(32px) saturate(1.8) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(1.8) !important;
+  border-radius: 12px !important;
+}
+
+html.dark .semi-toast-wrapper .semi-toast .semi-toast-content {
+  background: rgba(15, 15, 35, 0.30) !important;
+}
+
+/* -- 全局背景：iOS 风格鲜艳渐变壁纸（静态，避免 GPU 过载） -- */
+/* 光斑壁纸层：覆盖整个视口 */
 #root::after {
   content: '';
   position: fixed;
@@ -1187,89 +1362,38 @@ html.dark .semi-select-option-list {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 60% 50% at 15% 25%, rgba(167, 139, 250, 0.4), transparent 70%),
-    radial-gradient(ellipse 50% 60% at 85% 75%, rgba(249, 168, 212, 0.35), transparent 70%),
-    radial-gradient(ellipse 55% 55% at 50% 50%, rgba(110, 231, 183, 0.25), transparent 70%),
-    radial-gradient(ellipse 45% 50% at 75% 20%, rgba(251, 191, 36, 0.2), transparent 70%),
-    radial-gradient(ellipse 50% 45% at 25% 80%, rgba(103, 232, 249, 0.2), transparent 70%);
-  animation: bg-shift 20s ease-in-out infinite alternate;
-}
-
-@keyframes bg-shift {
-  0% {
-    background:
-      radial-gradient(ellipse 60% 50% at 15% 25%, rgba(167, 139, 250, 0.4), transparent 70%),
-      radial-gradient(ellipse 50% 60% at 85% 75%, rgba(249, 168, 212, 0.35), transparent 70%),
-      radial-gradient(ellipse 55% 55% at 50% 50%, rgba(110, 231, 183, 0.25), transparent 70%),
-      radial-gradient(ellipse 45% 50% at 75% 20%, rgba(251, 191, 36, 0.2), transparent 70%),
-      radial-gradient(ellipse 50% 45% at 25% 80%, rgba(103, 232, 249, 0.2), transparent 70%);
-  }
-  50% {
-    background:
-      radial-gradient(ellipse 55% 55% at 35% 60%, rgba(167, 139, 250, 0.35), transparent 70%),
-      radial-gradient(ellipse 60% 50% at 65% 30%, rgba(249, 168, 212, 0.3), transparent 70%),
-      radial-gradient(ellipse 50% 60% at 20% 40%, rgba(110, 231, 183, 0.3), transparent 70%),
-      radial-gradient(ellipse 50% 45% at 80% 70%, rgba(251, 191, 36, 0.25), transparent 70%),
-      radial-gradient(ellipse 45% 55% at 50% 15%, rgba(103, 232, 249, 0.25), transparent 70%);
-  }
-  100% {
-    background:
-      radial-gradient(ellipse 50% 60% at 70% 80%, rgba(167, 139, 250, 0.3), transparent 70%),
-      radial-gradient(ellipse 55% 50% at 30% 20%, rgba(249, 168, 212, 0.35), transparent 70%),
-      radial-gradient(ellipse 60% 55% at 80% 45%, rgba(110, 231, 183, 0.2), transparent 70%),
-      radial-gradient(ellipse 45% 55% at 15% 60%, rgba(251, 191, 36, 0.25), transparent 70%),
-      radial-gradient(ellipse 55% 45% at 55% 85%, rgba(103, 232, 249, 0.2), transparent 70%);
-  }
+    radial-gradient(ellipse at 18% 45%, rgba(139, 92, 246, 0.45) 0%, transparent 48%),
+    radial-gradient(ellipse at 82% 18%, rgba(14, 165, 233, 0.40) 0%, transparent 48%),
+    radial-gradient(ellipse at 48% 95%, rgba(249, 115, 22, 0.30) 0%, transparent 45%),
+    radial-gradient(ellipse at 92% 75%, rgba(236, 72, 153, 0.30) 0%, transparent 42%),
+    radial-gradient(ellipse at 8% 8%, rgba(16, 185, 129, 0.25) 0%, transparent 42%),
+    radial-gradient(ellipse at 55% 40%, rgba(232, 121, 249, 0.22) 0%, transparent 55%),
+    linear-gradient(135deg, #c7d2fe 0%, #fce7f3 25%, #bae6fd 50%, #fde68a 75%, #c4b5fd 100%);
+  /* 不使用 filter 动画 — 会导致所有 backdrop-filter 元素每帧重算 */
 }
 
 body {
-  background-color: #f8f9fc;
+  background-color: #f0f2f8;
   position: relative;
 }
 
-/* 深色模式 */
+/* 深色模式壁纸 */
 html.dark body {
-  background-color: #0f0f23;
+  background-color: #080818;
 }
 
 html.dark #root::after {
   background:
-    radial-gradient(ellipse 60% 50% at 15% 25%, rgba(124, 58, 237, 0.3), transparent 70%),
-    radial-gradient(ellipse 50% 60% at 85% 75%, rgba(99, 102, 241, 0.25), transparent 70%),
-    radial-gradient(ellipse 55% 55% at 50% 50%, rgba(6, 182, 212, 0.15), transparent 70%),
-    radial-gradient(ellipse 45% 50% at 75% 20%, rgba(139, 92, 246, 0.2), transparent 70%),
-    radial-gradient(ellipse 50% 45% at 25% 80%, rgba(59, 130, 246, 0.15), transparent 70%);
-  animation: bg-shift-dark 22s ease-in-out infinite alternate;
+    radial-gradient(ellipse at 18% 45%, rgba(124, 58, 237, 0.35) 0%, transparent 48%),
+    radial-gradient(ellipse at 82% 18%, rgba(59, 130, 246, 0.30) 0%, transparent 48%),
+    radial-gradient(ellipse at 48% 90%, rgba(6, 182, 212, 0.22) 0%, transparent 45%),
+    radial-gradient(ellipse at 92% 75%, rgba(236, 72, 153, 0.18) 0%, transparent 42%),
+    radial-gradient(ellipse at 8% 8%, rgba(16, 185, 129, 0.15) 0%, transparent 42%),
+    radial-gradient(ellipse at 55% 40%, rgba(139, 92, 246, 0.18) 0%, transparent 55%),
+    linear-gradient(135deg, #0c0c2e 0%, #1a0a2e 25%, #0a1628 50%, #1a1a0a 75%, #0f0f2b 100%);
 }
 
-@keyframes bg-shift-dark {
-  0% {
-    background:
-      radial-gradient(ellipse 60% 50% at 15% 25%, rgba(124, 58, 237, 0.3), transparent 70%),
-      radial-gradient(ellipse 50% 60% at 85% 75%, rgba(99, 102, 241, 0.25), transparent 70%),
-      radial-gradient(ellipse 55% 55% at 50% 50%, rgba(6, 182, 212, 0.15), transparent 70%),
-      radial-gradient(ellipse 45% 50% at 75% 20%, rgba(139, 92, 246, 0.2), transparent 70%),
-      radial-gradient(ellipse 50% 45% at 25% 80%, rgba(59, 130, 246, 0.15), transparent 70%);
-  }
-  50% {
-    background:
-      radial-gradient(ellipse 55% 55% at 40% 65%, rgba(124, 58, 237, 0.25), transparent 70%),
-      radial-gradient(ellipse 60% 50% at 60% 25%, rgba(99, 102, 241, 0.3), transparent 70%),
-      radial-gradient(ellipse 50% 60% at 20% 40%, rgba(6, 182, 212, 0.2), transparent 70%),
-      radial-gradient(ellipse 50% 45% at 80% 70%, rgba(236, 72, 153, 0.15), transparent 70%),
-      radial-gradient(ellipse 45% 55% at 50% 10%, rgba(59, 130, 246, 0.2), transparent 70%);
-  }
-  100% {
-    background:
-      radial-gradient(ellipse 50% 60% at 75% 80%, rgba(124, 58, 237, 0.2), transparent 70%),
-      radial-gradient(ellipse 55% 50% at 25% 15%, rgba(99, 102, 241, 0.25), transparent 70%),
-      radial-gradient(ellipse 60% 55% at 80% 40%, rgba(6, 182, 212, 0.18), transparent 70%),
-      radial-gradient(ellipse 45% 55% at 15% 55%, rgba(139, 92, 246, 0.22), transparent 70%),
-      radial-gradient(ellipse 55% 45% at 55% 90%, rgba(59, 130, 246, 0.15), transparent 70%);
-  }
-}
-
-/* -- Semi Layout 容器透明化，让毛玻璃效果可见 -- */
+/* -- Semi Layout 容器透明化，让 Liquid Glass 效果可见 -- */
 .semi-layout,
 .semi-layout-content,
 .semi-layout-header,
@@ -1285,4 +1409,19 @@ html.dark #root::after {
 .semi-table-wrapper,
 .semi-table-container {
   background: transparent !important;
+}
+
+/* -- 表格行 hover 玻璃效果 -- */
+.semi-table-row:hover > td {
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+html.dark .semi-table-row:hover > td {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* -- Semi Tag 标签玻璃效果 -- */
+.semi-tag {
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
 }
