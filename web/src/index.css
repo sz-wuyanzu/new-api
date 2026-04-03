@@ -77,19 +77,21 @@ code {
   flex-shrink: 0;
   align-items: center;
   gap: 4px;
-  font-weight: 600;
-  font-size: 1.125rem;
-  border-radius: 10px;
+  font-weight: 500;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  border-radius: 12px;
   border: 1px solid transparent;
   background: transparent;
+  position: relative;
   backdrop-filter: blur(0px) saturate(1);
   -webkit-backdrop-filter: blur(0px) saturate(1);
   transition:
-    background 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-    border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-    backdrop-filter 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-    -webkit-backdrop-filter 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    background 0.3s ease,
+    border-color 0.3s ease,
+    backdrop-filter 0.3s ease,
+    -webkit-backdrop-filter 0.3s ease,
+    box-shadow 0.3s ease,
     transform 0.2s ease;
 }
 
@@ -98,12 +100,24 @@ code {
 }
 
 .nav-pill-active {
-  background: rgba(255, 255, 255, 0.22);
-  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(16px) saturate(1.6);
   -webkit-backdrop-filter: blur(16px) saturate(1.6);
-  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   font-weight: 600;
+}
+
+/* 激活态底部指示条 */
+.nav-pill-active::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 25%;
+  right: 25%;
+  height: 2.5px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(99,102,241,0.8), rgba(139,92,246,0.8));
 }
 
 html.dark .nav-pill:hover:not(.nav-pill-active) {
@@ -111,9 +125,9 @@ html.dark .nav-pill:hover:not(.nav-pill-active) {
 }
 
 html.dark .nav-pill-active {
-  background: rgba(255, 255, 255, 0.16);
-  border-color: rgba(255, 255, 255, 0.20);
-  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   font-weight: 600;
 }
 

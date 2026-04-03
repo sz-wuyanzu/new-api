@@ -40,7 +40,7 @@ const Navigation = ({
   };
 
   const renderNavLinks = () => {
-    const spacingClasses = isMobile ? 'px-2.5 py-1' : 'px-3 py-1.5';
+    const spacingClasses = isMobile ? 'px-3 py-1.5' : 'px-4 py-2';
 
     return mainNavLinks.map((link) => {
       const active = isActive(link);
