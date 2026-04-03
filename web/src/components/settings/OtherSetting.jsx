@@ -52,6 +52,7 @@ const OtherSetting = () => {
   let [loading, setLoading] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [statusState, statusDispatch] = useContext(StatusContext);
+  const logoFileRef = useRef(null);
   const [updateData, setUpdateData] = useState({
     tag_name: '',
     content: '',
@@ -78,6 +79,7 @@ const OtherSetting = () => {
     [LEGAL_PRIVACY_POLICY_KEY]: false,
     SystemName: false,
     Logo: false,
+    LogoUpload: false,
     HomePageContent: false,
     About: false,
     Footer: false,
@@ -180,6 +182,34 @@ const OtherSetting = () => {
       showError('Logo 更新失败');
     } finally {
       setLoadingInput((loadingInput) => ({ ...loadingInput, Logo: false }));
+    }
+  };
+  // 个性化设置 - Logo 文件上传
+  const handleLogoFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      showError(t('图片大小不能超过 5MB'));
+      e.target.value = '';
+      return;
+    }
+    setLoadingInput((prev) => ({ ...prev, LogoUpload: true }));
+    try {
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      setInputs((prev) => ({ ...prev, Logo: dataUrl }));
+      await updateOption('Logo', dataUrl);
+      showSuccess('Logo 已更新');
+    } catch (error) {
+      console.error('Logo 上传失败', error);
+      showError('Logo 上传失败');
+    } finally {
+      setLoadingInput((prev) => ({ ...prev, LogoUpload: false }));
+      e.target.value = '';
     }
   };
   // 个性化设置 - 首页内容
@@ -437,13 +467,43 @@ const OtherSetting = () => {
               </Button>
               <Form.Input
                 label={t('Logo 图片地址')}
-                placeholder={t('在此输入 Logo 图片地址')}
+                placeholder={t('在此输入 Logo 图片地址，或使用下方上传')}
                 field={'Logo'}
                 onChange={handleInputChange}
               />
-              <Button onClick={submitLogo} loading={loadingInput['Logo']}>
-                {t('设置 Logo')}
-              </Button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                <Button onClick={submitLogo} loading={loadingInput['Logo']}>
+                  {t('设置 Logo')}
+                </Button>
+                <Button
+                  theme='outline'
+                  onClick={() => logoFileRef.current && logoFileRef.current.click()}
+                  loading={loadingInput['LogoUpload']}
+                >
+                  {t('上传图片')}
+                </Button>
+                <input
+                  ref={logoFileRef}
+                  type='file'
+                  accept='image/*'
+                  style={{ display: 'none' }}
+                  onChange={handleLogoFileChange}
+                />
+              </div>
+              {inputs.Logo && (
+                <div style={{ marginTop: 8 }}>
+                  <img
+                    src={inputs.Logo}
+                    alt='Logo preview'
+                    style={{
+                      maxHeight: 48,
+                      maxWidth: 200,
+                      borderRadius: 8,
+                      border: '1px solid var(--semi-color-border)',
+                    }}
+                  />
+                </div>
+              )}
               <Form.TextArea
                 label={t('首页内容')}
                 placeholder={t(
