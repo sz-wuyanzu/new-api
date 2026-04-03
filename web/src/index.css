@@ -840,6 +840,51 @@ body.auth-page-header-opaque main {
   padding-top: 0 !important;
 }
 
+/* Auth 页面右侧面板毛玻璃背景 */
+.auth-right-panel {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(48px) saturate(1.8) brightness(1.05);
+  -webkit-backdrop-filter: blur(48px) saturate(1.8) brightness(1.05);
+}
+
+html.dark .auth-right-panel {
+  background: rgba(15, 15, 30, 0.55);
+  backdrop-filter: blur(48px) saturate(1.6) brightness(1.02);
+  -webkit-backdrop-filter: blur(48px) saturate(1.6) brightness(1.02);
+}
+
+/* Auth 页面右侧表单卡片毛玻璃效果 */
+body.auth-page-header-opaque .semi-card {
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(24px) saturate(1.8) brightness(1.1) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.8) brightness(1.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+html.dark body.auth-page-header-opaque .semi-card {
+  background: rgba(255, 255, 255, 0.04) !important;
+  backdrop-filter: blur(24px) saturate(1.6) brightness(1.05) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.6) brightness(1.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Auth 页面输入框增强玻璃效果 */
+body.auth-page-header-opaque .semi-input-wrapper {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+}
+
+html.dark body.auth-page-header-opaque .semi-input-wrapper {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
 /* ==================== 卡片马卡龙模糊球（类封装） ==================== */
 /* 使用方式：给容器加上 with-pastel-balls 类即可，无需在 JSX 中插入额外节点 */
 .with-pastel-balls {

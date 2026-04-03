@@ -507,13 +507,13 @@ const LoginForm = () => {
       <div className='flex flex-col items-center'>
         <div className='w-full max-w-md'>
 
-          <Card className='border-0 !rounded-2xl overflow-hidden'>
-            <div className='flex justify-center pt-6 pb-2'>
-              <Title heading={3} className='text-gray-800 dark:text-gray-200'>
+          <Card className='border-0 !rounded-2xl overflow-hidden' style={{ boxShadow: 'none', background: 'transparent' }}>
+            <div className='flex justify-center pt-4 pb-2'>
+              <Title heading={2} style={{ letterSpacing: '-0.02em', fontWeight: 700 }}>
                 {t('登 录')}
               </Title>
             </div>
-            <div className='px-2 py-8'>
+            <div className='px-0 py-6'>
               <div className='space-y-3'>
                 {status.wechat_login && (
                   <Button
@@ -722,13 +722,13 @@ const LoginForm = () => {
       <div className='flex flex-col items-center'>
         <div className='w-full max-w-md'>
 
-          <Card className='border-0 !rounded-2xl overflow-hidden'>
-            <div className='flex justify-center pt-6 pb-2'>
-              <Title heading={3} className='text-gray-800 dark:text-gray-200'>
+          <Card className='border-0 !rounded-2xl overflow-hidden' style={{ boxShadow: 'none', background: 'transparent' }}>
+            <div className='flex justify-center pt-4 pb-2'>
+              <Title heading={2} style={{ letterSpacing: '-0.02em', fontWeight: 700 }}>
                 {t('登 录')}
               </Title>
             </div>
-            <div className='px-2 py-8'>
+            <div className='px-0 py-6'>
               {status.passkey_login && passkeySupported && (
                 <Button
                   theme='outline'

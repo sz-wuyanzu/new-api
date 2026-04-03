@@ -3,7 +3,58 @@
   Inspired by aghasisahakyan1's "Animated Characters Login Page" on 21st.dev.
   Adapted from Next.js/shadcn to React/Semi Design for this project.
 */
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+
+/* ── Grid overlay ── */
+const GridOverlay = () => (
+  <div className='absolute inset-0 overflow-hidden opacity-[0.07]' style={{ zIndex: 0 }}>
+    <svg width='100%' height='100%' xmlns='http://www.w3.org/2000/svg'>
+      <defs>
+        <pattern id='auth-grid' width='60' height='60' patternUnits='userSpaceOnUse'>
+          <path d='M 60 0 L 0 0 0 60' fill='none' stroke='white' strokeWidth='0.5' />
+        </pattern>
+      </defs>
+      <rect width='100%' height='100%' fill='url(#auth-grid)' />
+    </svg>
+  </div>
+);
+
+/* ── Floating orb ── */
+const FloatingOrb = ({ size, color, top, left, delay = 0, blur = 60 }) => (
+  <div
+    className='absolute rounded-full'
+    style={{
+      width: size, height: size, background: color, top, left,
+      filter: `blur(${blur}px)`, opacity: 0.45,
+      animation: `authFloatOrb ${8 + delay}s ease-in-out infinite`,
+      animationDelay: `${delay}s`, zIndex: 0,
+    }}
+  />
+);
+
+/* ── Mouse-following spotlight ── */
+const Spotlight = () => {
+  const [pos, setPos] = useState({ x: 50, y: 50 });
+  const ref = useRef(null);
+  useEffect(() => {
+    const handler = (e) => {
+      if (!ref.current) return;
+      const rect = ref.current.getBoundingClientRect();
+      setPos({
+        x: Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)),
+        y: Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100)),
+      });
+    };
+    window.addEventListener('mousemove', handler);
+    return () => window.removeEventListener('mousemove', handler);
+  }, []);
+  return (
+    <div ref={ref} className='absolute inset-0' style={{
+      background: `radial-gradient(600px circle at ${pos.x}% ${pos.y}%, rgba(255,255,255,0.06), transparent 60%)`,
+      transition: 'background 0.3s ease-out', zIndex: 1,
+    }} />
+  );
+};
 
 /* ── Pupil (no white eyeball, just a dot) ── */
 const Pupil = ({
@@ -220,17 +271,79 @@ const AnimatedCharactersPanel = ({
 
   return (
     <div
-      className='relative hidden lg:flex flex-col justify-between p-12'
+      className='relative hidden lg:flex flex-col justify-between'
       style={{
-        background: 'linear-gradient(135deg, rgba(var(--semi-blue-5),0.9), rgba(var(--semi-blue-6),1), rgba(var(--semi-blue-5),0.8))',
+        background: 'linear-gradient(145deg, #0a0a1a 0%, #0d1b3e 40%, #1a0a2e 70%, #0a0a1a 100%)',
         minHeight: '100vh',
+        overflow: 'hidden',
       }}
     >
-      {/* Top spacer (brand is in the global nav bar) */}
-      <div className='relative z-20' />
+      {/* Decorative layers */}
+      <GridOverlay />
+      <Spotlight />
+      <FloatingOrb size={280} color='rgba(99,102,241,0.25)' top='5%' left='55%' delay={0} blur={80} />
+      <FloatingOrb size={180} color='rgba(139,92,246,0.2)' top='60%' left='10%' delay={2} blur={70} />
+      <FloatingOrb size={120} color='rgba(59,130,246,0.15)' top='80%' left='65%' delay={4} blur={60} />
+
+      {/* Top spacer */}
+      <div className='relative z-20' style={{ minHeight: 48 }} />
+
+      {/* Brand section */}
+      <div className='relative z-20 flex flex-col items-center px-12'>
+        {/* Logo icon */}
+        <div className='mb-5'>
+          <div
+            className='w-16 h-16 rounded-2xl flex items-center justify-center'
+            style={{
+              background: 'linear-gradient(135deg, rgba(99,102,241,0.3), rgba(139,92,246,0.3))',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              boxShadow: '0 0 30px rgba(99,102,241,0.15)',
+            }}
+          >
+            {logo ? (
+              <img src={logo} alt='Logo' className='w-8 h-8 rounded-lg' />
+            ) : (
+              <svg width='28' height='28' viewBox='0 0 24 24' fill='none'>
+                <path d='M13 2L3 14h9l-1 8 10-12h-9l1-8z' stroke='url(#bolt-g)' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' />
+                <defs><linearGradient id='bolt-g' x1='3' y1='2' x2='22' y2='22'><stop stopColor='#818cf8' /><stop offset='1' stopColor='#c084fc' /></linearGradient></defs>
+              </svg>
+            )}
+          </div>
+        </div>
+        {/* Title */}
+        <h2
+          className='text-2xl font-bold mb-2 text-center'
+          style={{
+            background: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 30%, #a5b4fc 60%, #818cf8 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            letterSpacing: '-0.01em',
+          }}
+        >
+          {systemName || 'AI Gateway'}
+        </h2>
+        {/* Subtitle */}
+        <p className='text-center text-sm leading-relaxed max-w-xs' style={{ color: 'rgba(203,213,225,0.6)' }}>
+          Unified API access to the world's leading AI models.
+          <br />Fast, reliable, and secure.
+        </p>
+        {/* Feature pills */}
+        <div className='flex flex-wrap justify-center gap-2 mt-5'>
+          {['40+ Providers', 'OpenAI Compatible', 'Real-time Billing', 'Auto Failover'].map((label) => (
+            <span key={label} className='px-3 py-1 rounded-full text-xs' style={{
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              color: 'rgba(203,213,225,0.5)',
+            }}>
+              {label}
+            </span>
+          ))}
+        </div>
+      </div>
 
       {/* Characters */}
-      <div className='relative z-20 flex items-end justify-center' style={{ height: 500 }}>
+      <div className='relative z-20 flex items-end justify-center' style={{ height: 380 }}>
         <div className='relative' style={{ width: 550, height: 400 }}>
           {/* Purple character */}
           <div
@@ -385,14 +498,19 @@ const AnimatedCharactersPanel = ({
       </div>
 
       {/* Footer links */}
-      <div className='relative z-20 flex items-center gap-8 text-sm text-white/60'>
-        <a href='/privacy-policy' className='hover:text-white transition-colors'>Privacy Policy</a>
-        <a href='/user-agreement' className='hover:text-white transition-colors'>Terms of Service</a>
+      <div className='relative z-20 flex items-center gap-8 text-sm px-12 pb-8' style={{ color: 'rgba(203,213,225,0.3)' }}>
+        <a href='/privacy-policy' className='hover:text-white/60 transition-colors'>Privacy Policy</a>
+        <a href='/user-agreement' className='hover:text-white/60 transition-colors'>Terms of Service</a>
       </div>
 
-      {/* Decorative blurs */}
-      <div className='absolute top-1/4 right-1/4 w-64 h-64 bg-white/10 rounded-full blur-3xl' />
-      <div className='absolute bottom-1/4 left-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl' />
+      {/* CSS animations */}
+      <style>{`
+        @keyframes authFloatOrb {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          33% { transform: translate(30px, -20px) scale(1.05); }
+          66% { transform: translate(-20px, 15px) scale(0.95); }
+        }
+      `}</style>
     </div>
   );
 };

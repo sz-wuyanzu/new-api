@@ -113,8 +113,8 @@ const PasswordResetForm = () => {
             <p className='text-sm' style={{ color: 'var(--semi-color-text-2)' }}>{t('输入您的邮箱地址，我们将发送重置链接')}</p>
           </div>
 
-          <Card className='border-0 !rounded-2xl overflow-hidden'>
-            <div className='px-2 py-8'>
+          <Card className='border-0 !rounded-2xl overflow-hidden' style={{ boxShadow: 'none', background: 'transparent' }}>
+            <div className='px-0 py-6'>
               <Form className='space-y-3'>
                 <Form.Input
                   field='email'
