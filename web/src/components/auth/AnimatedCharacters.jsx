@@ -3,7 +3,7 @@
   Inspired by aghasisahakyan1's "Animated Characters Login Page" on 21st.dev.
   Adapted from Next.js/shadcn to React/Semi Design for this project.
 */
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 /* ── Grid overlay ── */
 const GridOverlay = () => (
