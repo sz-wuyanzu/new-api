@@ -485,7 +485,10 @@ func genBaseRelayInfo(c *gin.Context, request dto.Request) *RelayInfo {
 
 	if strings.HasPrefix(c.Request.URL.Path, "/pg") {
 		info.IsPlayground = true
-		info.RequestURLPath = strings.TrimPrefix(info.RequestURLPath, "/pg")
+		info.RequestURLPath = strings.TrimPrefix(c.Request.URL.Path, "/pg")
+		if c.Request.URL.RawQuery != "" {
+			info.RequestURLPath += "?" + c.Request.URL.RawQuery
+		}
 		info.RequestURLPath = "/v1" + info.RequestURLPath
 	}
 
