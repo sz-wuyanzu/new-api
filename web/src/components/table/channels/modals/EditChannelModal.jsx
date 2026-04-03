@@ -3693,14 +3693,14 @@ const EditChannelModal = (props) => {
             {/* Desktop: Advanced Settings Side Panel - rendered inside Form tree */}
             {!isMobile && advancedSettingsOpen && (
               <div
-                className='fixed top-0 h-full overflow-y-auto z-[1001] semi-sidesheet-inner'
+                className='fixed top-0 h-full overflow-y-auto z-[999] semi-sidesheet-inner channel-advanced-panel'
                 style={{
                   width: 600,
                   [isEdit ? 'right' : 'left']: 600,
                   backgroundColor: 'var(--semi-color-bg-0)',
                   borderLeft: isEdit ? 'none' : '1px solid var(--semi-color-border)',
                   borderRight: isEdit ? '1px solid var(--semi-color-border)' : 'none',
-                  animation: `slideIn${isEdit ? 'Left' : 'Right'} 0.3s ease-out`,
+                  animation: `slideIn${isEdit ? 'Right' : 'Left'} 0.3s ease-out`,
                 }}
               >
                 <div className='semi-sidesheet-header'>
