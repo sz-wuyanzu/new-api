@@ -63,8 +63,9 @@ func (s *BillingSession) Settle(actualQuota int) error {
 			tokenErr = model.IncreaseTokenQuota(s.relayInfo.TokenId, s.relayInfo.TokenKey, -delta)
 		}
 		if tokenErr != nil {
-			// 资金来源已提交，令牌调整失败只能记录日志；标记 settled 防止 Refund 误退资金
-			common.SysLog(fmt.Sprintf("error adjusting token quota after funding settled (userId=%d, tokenId=%d, delta=%d): %s",
+			// 资金来源已提交，令牌调整失败只能记录日志；标记 settled 防止 Refund 误退资金。
+			// 使用 SysError 而非 SysLog 确保告警可见。
+			common.SysError(fmt.Sprintf("BILLING_INCONSISTENCY: token quota adjustment failed after funding settled (userId=%d, tokenId=%d, delta=%d): %s",
 				s.relayInfo.UserId, s.relayInfo.TokenId, delta, tokenErr.Error()))
 		}
 	}

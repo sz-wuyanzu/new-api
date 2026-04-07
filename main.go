@@ -2,13 +2,16 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"embed"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/QuantumNous/new-api/common"
@@ -81,6 +84,7 @@ func main() {
 					_, _, fixErr := model.FixAbility()
 					if fixErr != nil {
 						common.FatalLog(fmt.Sprintf("InitChannelCache failed: %s", fixErr.Error()))
+						os.Exit(1)
 					}
 				}
 			}()
@@ -192,10 +196,34 @@ func main() {
 	// Log startup success message
 	common.LogStartupSuccess(startTime, port)
 
-	err = server.Run(":" + port)
-	if err != nil {
-		common.FatalLog("failed to start HTTP server: " + err.Error())
+	// Graceful shutdown: cancel background goroutines on SIGINT/SIGTERM
+	srv := &http.Server{
+		Addr:    ":" + port,
+		Handler: server,
 	}
+
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			common.FatalLog("failed to start HTTP server: " + err.Error())
+		}
+	}()
+
+	// Wait for interrupt signal
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	common.SysLog("shutting down server...")
+
+	// Cancel all background goroutines via the global shutdown context
+	common.TriggerShutdown()
+
+	// Give outstanding requests 10 seconds to complete
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer shutdownCancel()
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		common.SysError("server forced to shutdown: " + err.Error())
+	}
+	common.SysLog("server exited")
 }
 
 func InjectUmamiAnalytics() {
