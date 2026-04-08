@@ -30,13 +30,14 @@ import Turnstile from 'react-turnstile';
 import { Button, Card, Form, Typography } from '@douyinfe/semi-ui';
 import { IconMail } from '@douyinfe/semi-icons';
 import { Link } from 'react-router-dom';
-import AuthLayout from './AuthLayout';
+import { useAuthAnimation } from './AuthLayoutRoute';
 import { useTranslation } from 'react-i18next';
 
 const { Text, Title } = Typography;
 
 const PasswordResetForm = () => {
   const { t } = useTranslation();
+  const { setIsTyping } = useAuthAnimation();
   const [inputs, setInputs] = useState({
     email: '',
   });
@@ -105,73 +106,69 @@ const PasswordResetForm = () => {
   }
 
   return (
-    <AuthLayout>
-      {({ setIsTyping }) => (
-        <div>
-          <div className='text-center mb-10'>
-            <h1 className='text-3xl font-bold tracking-tight mb-2'>{t('密码重置')}</h1>
-            <p className='text-sm' style={{ color: 'var(--semi-color-text-2)' }}>{t('输入您的邮箱地址，我们将发送重置链接')}</p>
+    <div>
+      <div className='text-center mb-10'>
+        <h1 className='text-3xl font-bold tracking-tight mb-2'>{t('密码重置')}</h1>
+        <p className='text-sm' style={{ color: 'var(--semi-color-text-2)' }}>{t('输入您的邮箱地址，我们将发送重置链接')}</p>
+      </div>
+
+      <Card className='border-0 !rounded-2xl overflow-hidden' style={{ boxShadow: 'none', background: 'transparent' }}>
+        <div className='px-0 py-6'>
+          <Form className='space-y-3'>
+            <Form.Input
+              field='email'
+              label={t('邮箱')}
+              placeholder={t('请输入您的邮箱地址')}
+              name='email'
+              value={email}
+              onChange={handleChange}
+              onFocus={() => setIsTyping && setIsTyping(true)}
+              onBlur={() => setIsTyping && setIsTyping(false)}
+              prefix={<IconMail />}
+            />
+
+            <div className='space-y-2 pt-2'>
+              <Button
+                theme='solid'
+                className='w-full !rounded-full'
+                type='primary'
+                htmlType='submit'
+                onClick={handleSubmit}
+                loading={loading}
+                disabled={disableButton}
+              >
+                {disableButton
+                  ? `${t('重试')} (${countdown})`
+                  : t('提交')}
+              </Button>
+            </div>
+          </Form>
+
+          <div className='mt-6 text-center text-sm'>
+            <Text>
+              {t('想起来了？')}{' '}
+              <Link
+                to='/login'
+                className='text-blue-600 hover:text-blue-800 font-medium'
+              >
+                {t('登录')}
+              </Link>
+            </Text>
           </div>
+        </div>
+      </Card>
 
-          <Card className='border-0 !rounded-2xl overflow-hidden' style={{ boxShadow: 'none', background: 'transparent' }}>
-            <div className='px-0 py-6'>
-              <Form className='space-y-3'>
-                <Form.Input
-                  field='email'
-                  label={t('邮箱')}
-                  placeholder={t('请输入您的邮箱地址')}
-                  name='email'
-                  value={email}
-                  onChange={handleChange}
-                  onFocus={() => setIsTyping && setIsTyping(true)}
-                  onBlur={() => setIsTyping && setIsTyping(false)}
-                  prefix={<IconMail />}
-                />
-
-                <div className='space-y-2 pt-2'>
-                  <Button
-                    theme='solid'
-                    className='w-full !rounded-full'
-                    type='primary'
-                    htmlType='submit'
-                    onClick={handleSubmit}
-                    loading={loading}
-                    disabled={disableButton}
-                  >
-                    {disableButton
-                      ? `${t('重试')} (${countdown})`
-                      : t('提交')}
-                  </Button>
-                </div>
-              </Form>
-
-              <div className='mt-6 text-center text-sm'>
-                <Text>
-                  {t('想起来了？')}{' '}
-                  <Link
-                    to='/login'
-                    className='text-blue-600 hover:text-blue-800 font-medium'
-                  >
-                    {t('登录')}
-                  </Link>
-                </Text>
-              </div>
-            </div>
-          </Card>
-
-          {turnstileEnabled && (
-            <div className='flex justify-center mt-6'>
-              <Turnstile
-                sitekey={turnstileSiteKey}
-                onVerify={(token) => {
-                  setTurnstileToken(token);
-                }}
-              />
-            </div>
-          )}
+      {turnstileEnabled && (
+        <div className='flex justify-center mt-6'>
+          <Turnstile
+            sitekey={turnstileSiteKey}
+            onVerify={(token) => {
+              setTurnstileToken(token);
+            }}
+          />
         </div>
       )}
-    </AuthLayout>
+    </div>
   );
 };
 

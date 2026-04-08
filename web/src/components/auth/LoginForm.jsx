@@ -64,13 +64,14 @@ import OIDCIcon from '../common/logo/OIDCIcon';
 import WeChatIcon from '../common/logo/WeChatIcon';
 import LinuxDoIcon from '../common/logo/LinuxDoIcon';
 import TwoFAVerification from './TwoFAVerification';
-import AuthLayout from './AuthLayout';
+import { useAuthAnimation } from './AuthLayoutRoute';
 import { useTranslation } from 'react-i18next';
 import { SiDiscord } from 'react-icons/si';
 
 const LoginForm = () => {
   let navigate = useNavigate();
   const { t } = useTranslation();
+  const { setIsTyping, setShowPassword: setShowPwd, setHasPassword } = useAuthAnimation();
   const githubButtonTextKeyByState = {
     idle: '使用 GitHub 继续',
     redirecting: '正在跳转 GitHub...',
@@ -155,6 +156,13 @@ const LoginForm = () => {
     setHasUserAgreement(status?.user_agreement_enabled || false);
     setHasPrivacyPolicy(status?.privacy_policy_enabled || false);
   }, [status]);
+
+  // Reset animation state when login form mounts
+  useEffect(() => {
+    setHasPassword(false);
+    setShowPwd(false);
+    setIsTyping(false);
+  }, []);
 
   useEffect(() => {
     isPasskeySupported()
@@ -959,28 +967,24 @@ const LoginForm = () => {
   };
 
   return (
-    <AuthLayout>
-      {({ setIsTyping, setShowPassword: setShowPwd, setHasPassword }) => (
-        <div>
-          {showEmailLogin || !hasOAuthLoginOptions
-            ? renderEmailLoginForm({ setIsTyping, setShowPwd, setHasPassword })
-            : renderOAuthOptions()}
-          {renderWeChatLoginModal()}
-          {render2FAModal()}
+    <div>
+      {showEmailLogin || !hasOAuthLoginOptions
+        ? renderEmailLoginForm({ setIsTyping, setShowPwd, setHasPassword })
+        : renderOAuthOptions()}
+      {renderWeChatLoginModal()}
+      {render2FAModal()}
 
-          {turnstileEnabled && (
-            <div className='flex justify-center mt-6'>
-              <Turnstile
-                sitekey={turnstileSiteKey}
-                onVerify={(token) => {
-                  setTurnstileToken(token);
-                }}
-              />
-            </div>
-          )}
+      {turnstileEnabled && (
+        <div className='flex justify-center mt-6'>
+          <Turnstile
+            sitekey={turnstileSiteKey}
+            onVerify={(token) => {
+              setTurnstileToken(token);
+            }}
+          />
         </div>
       )}
-    </AuthLayout>
+    </div>
   );
 };
 

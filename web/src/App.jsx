@@ -27,6 +27,7 @@ import { StatusContext } from './context/Status';
 
 import OAuth2Callback from './components/auth/OAuth2Callback';
 import SetupCheck from './components/layout/SetupCheck';
+import AuthLayoutRoute from './components/auth/AuthLayoutRoute';
 
 const Home = lazy(() => import('./pages/Home'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -126,15 +127,17 @@ function App() {
             element={<AdminRoute><User /></AdminRoute>}
           />
           <Route path='/user/reset' element={<PasswordResetConfirm />} />
-          <Route
-            path='/login'
-            element={<AuthRedirect><LoginForm /></AuthRedirect>}
-          />
-          <Route
-            path='/register'
-            element={<AuthRedirect><RegisterForm /></AuthRedirect>}
-          />
-          <Route path='/reset' element={<PasswordResetForm />} />
+          <Route element={<AuthLayoutRoute />}>
+            <Route
+              path='/login'
+              element={<AuthRedirect><LoginForm /></AuthRedirect>}
+            />
+            <Route
+              path='/register'
+              element={<AuthRedirect><RegisterForm /></AuthRedirect>}
+            />
+            <Route path='/reset' element={<PasswordResetForm />} />
+          </Route>
           <Route path='/oauth/github' element={<OAuth2Callback type='github' />} />
           <Route path='/oauth/discord' element={<OAuth2Callback type='discord' />} />
           <Route path='/oauth/oidc' element={<OAuth2Callback type='oidc' />} />

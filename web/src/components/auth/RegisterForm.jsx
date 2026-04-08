@@ -62,13 +62,14 @@ import WeChatIcon from '../common/logo/WeChatIcon';
 import TelegramLoginButton from 'react-telegram-login/src';
 import { UserContext } from '../../context/User';
 import { StatusContext } from '../../context/Status';
-import AuthLayout from './AuthLayout';
+import { useAuthAnimation } from './AuthLayoutRoute';
 import { useTranslation } from 'react-i18next';
 import { SiDiscord } from 'react-icons/si';
 
 const RegisterForm = () => {
   let navigate = useNavigate();
   const { t } = useTranslation();
+  const { setIsTyping, setShowPassword: setShowPwd, setHasPassword } = useAuthAnimation();
   const githubButtonTextKeyByState = {
     idle: '使用 GitHub 继续',
     redirecting: '正在跳转 GitHub...',
@@ -102,6 +103,7 @@ const RegisterForm = () => {
     useState(false);
   const [wechatCodeSubmitLoading, setWechatCodeSubmitLoading] = useState(false);
   const [customOAuthLoading, setCustomOAuthLoading] = useState({});
+  const [localShowPwd, setLocalShowPwd] = useState(false);
   const [disableButton, setDisableButton] = useState(false);
   const [countdown, setCountdown] = useState(30);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
@@ -155,6 +157,13 @@ const RegisterForm = () => {
     setHasUserAgreement(status?.user_agreement_enabled || false);
     setHasPrivacyPolicy(status?.privacy_policy_enabled || false);
   }, [status]);
+
+  // Reset animation state when register form mounts
+  useEffect(() => {
+    setHasPassword(false);
+    setShowPwd(false);
+    setIsTyping(false);
+  }, []);
 
   useEffect(() => {
     let countdownInterval = null;
@@ -549,7 +558,12 @@ const RegisterForm = () => {
     );
   };
 
-  const renderEmailRegisterForm = ({ setIsTyping, setHasPassword } = {}) => {
+  const renderEmailRegisterForm = ({ setIsTyping, setShowPwd, setHasPassword } = {}) => {
+    const toggleShowPwd = () => {
+      const next = !localShowPwd;
+      setLocalShowPwd(next);
+      setShowPwd && setShowPwd(next);
+    };
     return (
       <div className='flex flex-col items-center'>
         <div className='w-full max-w-md'>
@@ -568,7 +582,10 @@ const RegisterForm = () => {
                   placeholder={t('请输入用户名')}
                   name='username'
                   onChange={(value) => handleChange('username', value)}
-                  onFocus={() => setIsTyping && setIsTyping(true)}
+                  onFocus={() => {
+                    setIsTyping && setIsTyping(true);
+                    setHasPassword && setHasPassword(false);
+                  }}
                   onBlur={() => setIsTyping && setIsTyping(false)}
                   prefix={<IconUser />}
                 />
@@ -578,14 +595,26 @@ const RegisterForm = () => {
                   label={t('密码')}
                   placeholder={t('输入密码，最短 8 位，最长 20 位')}
                   name='password'
-                  mode='password'
+                  type={localShowPwd ? 'text' : 'password'}
                   onChange={(value) => {
                     handleChange('password', value);
                     setHasPassword && setHasPassword(value.length > 0);
                   }}
-                  onFocus={() => setIsTyping && setIsTyping(true)}
+                  onFocus={() => {
+                    setIsTyping && setIsTyping(true);
+                    setHasPassword && setHasPassword(password.length > 0);
+                    setShowPwd && setShowPwd(localShowPwd);
+                  }}
                   onBlur={() => setIsTyping && setIsTyping(false)}
                   prefix={<IconLock />}
+                  suffix={
+                    <span
+                      onClick={toggleShowPwd}
+                      style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                    >
+                      {localShowPwd ? <Icon svg={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>} /> : <Icon svg={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>} />}
+                    </span>
+                  }
                 />
 
                 <Form.Input
@@ -593,11 +622,23 @@ const RegisterForm = () => {
                   label={t('确认密码')}
                   placeholder={t('确认密码')}
                   name='password2'
-                  mode='password'
+                  type={localShowPwd ? 'text' : 'password'}
                   onChange={(value) => handleChange('password2', value)}
-                  onFocus={() => setIsTyping && setIsTyping(true)}
+                  onFocus={() => {
+                    setIsTyping && setIsTyping(true);
+                    setHasPassword && setHasPassword(true);
+                    setShowPwd && setShowPwd(localShowPwd);
+                  }}
                   onBlur={() => setIsTyping && setIsTyping(false)}
                   prefix={<IconLock />}
+                  suffix={
+                    <span
+                      onClick={toggleShowPwd}
+                      style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                    >
+                      {localShowPwd ? <Icon svg={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>} /> : <Icon svg={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>} />}
+                    </span>
+                  }
                 />
 
                 {showEmailVerification && (
@@ -768,27 +809,23 @@ const RegisterForm = () => {
   };
 
   return (
-    <AuthLayout>
-      {({ setIsTyping, setHasPassword }) => (
-        <div>
-          {showEmailRegister || !hasOAuthRegisterOptions
-            ? renderEmailRegisterForm({ setIsTyping, setHasPassword })
-            : renderOAuthOptions()}
-          {renderWeChatLoginModal()}
+    <div>
+      {showEmailRegister || !hasOAuthRegisterOptions
+        ? renderEmailRegisterForm({ setIsTyping, setShowPwd, setHasPassword })
+        : renderOAuthOptions()}
+      {renderWeChatLoginModal()}
 
-          {turnstileEnabled && (
-            <div className='flex justify-center mt-6'>
-              <Turnstile
-                sitekey={turnstileSiteKey}
-                onVerify={(token) => {
-                  setTurnstileToken(token);
-                }}
-              />
-            </div>
-          )}
+      {turnstileEnabled && (
+        <div className='flex justify-center mt-6'>
+          <Turnstile
+            sitekey={turnstileSiteKey}
+            onVerify={(token) => {
+              setTurnstileToken(token);
+            }}
+          />
         </div>
       )}
-    </AuthLayout>
+    </div>
   );
 };
 
