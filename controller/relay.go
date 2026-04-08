@@ -187,6 +187,15 @@ func Relay(c *gin.Context, relayFormat types.RelayFormat) {
 	relayInfo.LastError = nil
 
 	for ; retryParam.GetRetry() <= common.RetryTimes; retryParam.IncreaseRetry() {
+		// Check if client has disconnected before retrying
+		select {
+		case <-c.Request.Context().Done():
+			logger.LogInfo(c, "client disconnected, aborting retry")
+			newAPIError = types.NewError(c.Request.Context().Err(), types.ErrorCodeDoRequestFailed, types.ErrOptionWithSkipRetry())
+			return
+		default:
+		}
+
 		relayInfo.RetryIndex = retryParam.GetRetry()
 		channel, channelErr := getChannel(c, relayInfo, retryParam)
 		if channelErr != nil {

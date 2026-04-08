@@ -27,7 +27,14 @@ func UpdateQuotaData() {
 			common.SysLog("正在更新数据看板数据...")
 			SaveQuotaDataCache()
 		}
-		time.Sleep(time.Duration(common.DataExportInterval) * time.Minute)
+		timer := time.NewTimer(time.Duration(common.DataExportInterval) * time.Minute)
+		select {
+		case <-common.ShutdownCtx.Done():
+			timer.Stop()
+			common.SysLog("UpdateQuotaData stopped due to shutdown")
+			return
+		case <-timer.C:
+		}
 	}
 }
 

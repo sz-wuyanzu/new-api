@@ -186,10 +186,17 @@ func loadOptionsFromDatabase() {
 }
 
 func SyncOptions(frequency int) {
+	ticker := time.NewTicker(time.Duration(frequency) * time.Second)
+	defer ticker.Stop()
 	for {
-		time.Sleep(time.Duration(frequency) * time.Second)
-		common.SysLog("syncing options from database")
-		loadOptionsFromDatabase()
+		select {
+		case <-common.ShutdownCtx.Done():
+			common.SysLog("SyncOptions stopped due to shutdown")
+			return
+		case <-ticker.C:
+			common.SysLog("syncing options from database")
+			loadOptionsFromDatabase()
+		}
 	}
 }
 
